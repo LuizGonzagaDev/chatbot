@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import scrolledtext
 import openai
 
-# Definir a chave da API (substitua pela sua)
-openai.api_key ="sua chave api"
+# Definir a chave da API (substitua pela sua chave de API da OpenAI)
+openai.api_key = "sua chave api"
 
 # Função para enviar a mensagem ao modelo GPT
 def enviar_mensagem():
@@ -15,20 +15,23 @@ def enviar_mensagem():
     texto_conversa.insert(tk.END, f"Você: {mensagem}\n")
     entrada_texto.delete(0, tk.END)  # Limpar a entrada de texto
 
-    # Processar a mensagem com o GPT
-    lista_mensagens.append({"role": "user", "content": mensagem})
-    resposta = openai.ChatCompletion.create(
-        model="gpt versao",  # ou "gpt-3.5-turbo"
-        messages=lista_mensagens,
-    )
-    
-    # Pegar a resposta da API
-    resposta_chat = resposta['choices'][0]['message']['content']
-    lista_mensagens.append({"role": "assistant", "content": resposta_chat})
-    
-    # Adicionar a resposta do bot na caixa de texto
-    texto_conversa.insert(tk.END, f"Bot: {resposta_chat}\n")
-    texto_conversa.yview(tk.END)  # Scroll para a parte mais recente da conversa
+    try:
+        # Processar a mensagem com o GPT
+        lista_mensagens.append({"role": "user", "content": mensagem})
+        resposta = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # ou "gpt-4" se tiver acesso
+            messages=lista_mensagens,
+        )
+        
+        # Pegar a resposta da API
+        resposta_chat = resposta['choices'][0]['message']['content']
+        lista_mensagens.append({"role": "assistant", "content": resposta_chat})
+        
+        # Adicionar a resposta do bot na caixa de texto
+        texto_conversa.insert(tk.END, f"Bot: {resposta_chat}\n")
+        texto_conversa.yview(tk.END)  # Scroll para a parte mais recente da conversa
+    except Exception as e:
+        texto_conversa.insert(tk.END, f"Erro ao se comunicar com a API: {str(e)}\n")
 
 # Configuração da janela principal
 janela = tk.Tk()
